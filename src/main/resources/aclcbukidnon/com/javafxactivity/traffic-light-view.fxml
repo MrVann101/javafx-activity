@@ -4,11 +4,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="638.0" spacing="10.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="638.0" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="aclcbukidnon.com.javafxactivity.controllers.TrafficLightController">
    <children>
-      <Circle fill="#575757" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
-      <Circle fill="#575757" layoutX="110.0" layoutY="110.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
-      <Circle fill="#575757" layoutX="310.0" layoutY="110.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="redLight" fill="#575757" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="orangeLight" fill="#575757" layoutX="110.0" layoutY="110.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="greenLight" fill="#575757" layoutX="310.0" layoutY="110.0" radius="100.0" stroke="BLACK" strokeType="INSIDE" />
    </children>
    <padding>
       <Insets left="10.0" right="10.0" />

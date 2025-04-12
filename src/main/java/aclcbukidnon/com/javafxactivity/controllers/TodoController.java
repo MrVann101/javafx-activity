@@ -1,74 +1,80 @@
 package aclcbukidnon.com.javafxactivity.controllers;
 
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.stream.Collectors;
 
 public class TodoController {
 
     @FXML
-    private ListView<String> todoList;
+    private ListView<CheckBox> todoList;
+
+    private final Path savePath = Paths.get("todo.txt");
 
     @FXML
-    public void initialize(){
-        ObservableList<String> initialItems = FXCollections.observableArrayList();
-        initialItems.add("Remove Me");
+    public void initialize() {
+        loadTasks();
+    }
 
-        todoList.setItems(initialItems);
-        todoList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        todoList.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldVal, newVal) ->
-                {
+    @FXML
+    public void onCreateClick() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Create Task");
+        dialog.setHeaderText("Enter a new task:");
+        dialog.setContentText("Task:");
 
-                    if (newVal != null){
-                        onTodoListItemClick(newVal);
-                    }
+        dialog.showAndWait().ifPresent(task -> {
+            CheckBox newItem = new CheckBox(task);
+            todoList.getItems().add(newItem);
+            saveTasks();
+        });
+    }
+
+    @FXML
+    public void onDeleteClick() {
+        var selected = todoList.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            todoList.getItems().remove(selected);
+            saveTasks();
+        }
+    }
+
+    @FXML
+    public void onListEdit() {
+        // Optional: implement future edit behavior
+    }
+
+    private void saveTasks() {
+        try (BufferedWriter writer = Files.newBufferedWriter(savePath)) {
+            for (CheckBox cb : todoList.getItems()) {
+                writer.write(cb.isSelected() + "|" + cb.getText());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTasks() {
+        if (!Files.exists(savePath)) return;
+
+        try (BufferedReader reader = Files.newBufferedReader(savePath)) {
+            todoList.getItems().clear();
+            reader.lines().forEach(line -> {
+                String[] parts = line.split("\\|", 2);
+                if (parts.length == 2) {
+                    CheckBox cb = new CheckBox(parts[1]);
+                    cb.setSelected(Boolean.parseBoolean(parts[0]));
+                    cb.selectedProperty().addListener((obs, oldVal, newVal) -> saveTasks());
+                    todoList.getItems().add(cb);
                 }
-
-        );
-    }
-
-
-    private void onTodoListItemClick(String value){
-
-        var dialog = new TextInputDialog(value);
-        dialog.setTitle("Update Todo");
-
-
-        var result = dialog.showAndWait();
-        result.ifPresent(text -> System.out.println(text));
-    }
-
-
-
-    @FXML
-    protected void onCreateClick(){
-        var dialog = new TextInputDialog("");
-        dialog.setTitle("Create New Todo");
-
-
-        var result = dialog.showAndWait();
-        result.ifPresent(text -> System.out.println(text));
-    }
-
-    @FXML
-    protected void onDeleteClick(){
-
-        var confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation Dialog");
-        confirm.setHeaderText("Are you sure you want to delete this todo?");
-        confirm.setContentText("This action cannot be undone.");
-
-        var result = confirm.showAndWait();
-        if (result.isPresent()) {
-            result.get();
-        }// User clicked OK
-    }
-
-    @FXML
-    protected void onListEdit(){
-
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
